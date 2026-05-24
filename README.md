@@ -177,17 +177,6 @@ No installation required.
 
 ---
 
-# 📸 Screenshots
-
-Add screenshots for:
-
-- Home chatbot UI
-- Complaint form
-- Complaint tracking
-- AI detection result
-
----
-
 # 🔮 Future Enhancements
 
 - Real AI/ML road damage detection
