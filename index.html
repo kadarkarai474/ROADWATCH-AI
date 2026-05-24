@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, max-width=device-width">
+<title>ROADWATCH AI — Civic Infrastructure Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060d1a;--bg2:#0b1526;--bg3:#111f38;--bg4:#162440;
+  --glass:rgba(11,21,38,0.8);--glass2:rgba(17,31,56,0.6);
+  --border:rgba(56,189,248,0.12);--border2:rgba(56,189,248,0.28);--border3:rgba(56,189,248,0.5);
+  --c1:#38bdf8;--c2:#06d6a0;--c3:#f97316;--c4:#a78bfa;--c5:#fb7185;
+  --text:#dbeafe;--text2:#7fa8c9;--text3:#3d6080;
+  --red:#ef4444;--yellow:#eab308;--green:#22c55e;
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+  --r:14px;--r2:20px;--r3:28px;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden;line-height:1.5}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 10% 10%,rgba(56,189,248,0.07) 0%,transparent 55%),radial-gradient(ellipse 60% 60% at 90% 90%,rgba(167,139,250,0.06) 0%,transparent 55%);pointer-events:none;z-index:0}
+/* ---- LAYOUT ---- */
+.page{display:none;position:relative;z-index:1;min-height:calc(100vh - 64px);padding-bottom:60px}
+.page.active{display:block;animation:pageIn .35s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.container{max-width:1140px;margin:0 auto;padding:0 20px}
+.section{padding:36px 0}
+/* ---- NAV ---- */
+nav{position:sticky;top:0;z-index:200;height:64px;background:rgba(6,13,26,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center}
+.nav-inner{max-width:1140px;margin:0 auto;padding:0 20px;width:100%;display:flex;align-items:center;gap:10px}
+.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;margin-right:auto}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--c1),var(--c2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:1.1rem;font-weight:800;letter-spacing:.5px;color:var(--text)}
+.logo-text em{color:var(--c1);font-style:normal}
+.nav-links{display:flex;gap:2px}
+.nl{padding:6px 13px;border-radius:9px;font-size:.82rem;font-weight:500;cursor:pointer;color:var(--text2);transition:all .18s;border:1px solid transparent;white-space:nowrap}
+.nl:hover,.nl.on{background:var(--glass2);color:var(--c1);border-color:var(--border)}
+.nav-cta{padding:8px 18px;background:linear-gradient(135deg,var(--c1),#0ea5e9);border:none;border-radius:9px;color:#fff;font-weight:700;font-size:.82rem;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .18s}
+.nav-cta:hover{opacity:.88;transform:translateY(-1px)}
+/* ---- HERO ---- */
+.hero{padding:56px 20px 40px;text-align:center;max-width:1140px;margin:0 auto}
+.hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(56,189,248,0.09);border:1px solid var(--border2);padding:5px 16px;border-radius:100px;font-size:.75rem;font-family:var(--mono);color:var(--c1);margin-bottom:22px}
+.pill-dot{width:7px;height:7px;border-radius:50%;background:var(--c2);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(2rem,4.5vw,3.6rem);font-weight:900;line-height:1.08;margin-bottom:16px;letter-spacing:-1px}
+.hero h1 .gr{background:linear-gradient(120deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:var(--text2);font-size:clamp(.9rem,2vw,1.05rem);max-width:540px;margin:0 auto 32px;font-weight:400}
+.hero-search{max-width:540px;margin:0 auto 44px;display:flex;gap:10px}
+.hero-search input{flex:1;padding:13px 18px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;color:var(--text);font-size:.92rem;outline:none;font-family:var(--font);min-width:0}
+.hero-search input:focus{border-color:var(--c1);box-shadow:0 0 0 3px rgba(56,189,248,.12)}
+.hero-search input::placeholder{color:var(--text3)}
+.hero-search button{padding:13px 22px;background:linear-gradient(135deg,var(--c1),#0ea5e9);border:none;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;font-size:.88rem}
+/* ---- STATS ---- */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:44px}
+.stat{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;text-align:center;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--c1),transparent)}
+.stat-n{font-size:1.7rem;font-weight:800;color:var(--c1);letter-spacing:-1px}
+.stat-l{font-size:.72rem;color:var(--text2);font-family:var(--mono);margin-top:3px}
+/* ---- CARDS ---- */
+.card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r2);padding:20px;backdrop-filter:blur(12px);transition:all .2s}
+.card:hover{border-color:var(--border2);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.card-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.card-title{font-weight:700;font-size:.95rem;margin-bottom:5px}
+.card-meta{font-size:.78rem;color:var(--text2);line-height:1.55}
+/* ---- BADGES ---- */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:600;font-family:var(--mono)}
+.b-blue{background:rgba(56,189,248,.13);color:var(--c1);border:1px solid rgba(56,189,248,.3)}
+.b-green{background:rgba(34,197,94,.13);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.b-yellow{background:rgba(234,179,8,.13);color:var(--yellow);border:1px solid rgba(234,179,8,.3)}
+.b-red{background:rgba(239,68,68,.13);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.b-purple{background:rgba(167,139,250,.13);color:var(--c4);border:1px solid rgba(167,139,250,.3)}
+/* ---- HEALTH BAR ---- */
+.hbar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin:10px 0 5px}
+.hbar-fill{height:100%;border-radius:3px}
+/* ---- MAP ---- */
+.map-wrap{border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;height:380px;position:relative;background:linear-gradient(180deg,#04111f 0%,#071828 100%)}
+.map-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(56,189,248,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.04) 1px,transparent 1px);background-size:44px 44px}
+.road-h{position:absolute;height:5px;width:100%;border-radius:3px;left:0}
+.road-v{position:absolute;width:5px;height:100%;border-radius:3px;top:0}
+.mmarker{position:absolute;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:transform .2s;animation:mfloat 3.5s ease-in-out infinite}
+@keyframes mfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.mmarker:hover{transform:scale(1.35)!important;z-index:20}
+.mmarker.bad{background:rgba(239,68,68,.25);border:2px solid var(--red)}
+.mmarker.ok{background:rgba(34,197,94,.25);border:2px solid var(--green)}
+.mmarker.wip{background:rgba(234,179,8,.25);border:2px solid var(--yellow)}
+.mpop{position:absolute;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:14px;min-width:195px;z-index:50;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:popin .18s ease;display:none}
+@keyframes popin{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.mpop h4{font-size:.9rem;font-weight:700;color:var(--c1);margin-bottom:7px}
+.mpop p{font-size:.77rem;color:var(--text2);margin-bottom:3px}
+.mpop .mbtn{display:block;width:100%;margin-top:10px;padding:7px;background:linear-gradient(135deg,var(--c1),#0ea5e9);border:none;border-radius:8px;color:#fff;font-weight:600;font-size:.78rem;cursor:pointer;font-family:var(--font)}
+.mleg{position:absolute;bottom:12px;left:12px;display:flex;gap:8px;flex-wrap:wrap}
+.mleg-item{display:flex;align-items:center;gap:5px;font-size:.7rem;font-family:var(--mono);background:rgba(6,13,26,.82);padding:3px 9px;border-radius:100px;border:1px solid var(--border)}
+.mleg-dot{width:7px;height:7px;border-radius:50%}
+/* ---- SECTION TITLE ---- */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.sec-title{font-size:1.2rem;font-weight:800;display:flex;align-items:center;gap:9px}
+.sec-title span{color:var(--c1)}
+/* ---- COMPLAINT FORM ---- */
+.form-wrap{max-width:680px;margin:0 auto}
+.f-group{margin-bottom:18px}
+.f-label{display:block;font-size:.8rem;font-weight:600;color:var(--text2);margin-bottom:7px;font-family:var(--mono)}
+.f-input{width:100%;padding:11px 15px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.88rem;outline:none;transition:all .18s;font-family:var(--font)}
+.f-input:focus{border-color:var(--c1);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
+.f-input::placeholder{color:var(--text3)}
+.f-input option{background:var(--bg2)}
+textarea.f-input{resize:vertical;min-height:90px}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cat-opt{padding:9px 8px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--text2);font-size:.78rem;cursor:pointer;text-align:center;font-family:var(--font);transition:all .18s;line-height:1.3}
+.cat-opt:hover,.cat-opt.chosen{border-color:var(--c1);background:rgba(56,189,248,.1);color:var(--c1)}
+.tabs-bar{display:flex;gap:4px;background:var(--bg2);border-radius:11px;padding:4px;margin-bottom:20px}
+.tab{flex:1;padding:8px 10px;border-radius:8px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--text2);transition:all .18s}
+.tab.on{background:var(--bg3);color:var(--c1)}
+/* ---- UPLOAD ---- */
+.upload-area{border:2px dashed var(--border2);border-radius:var(--r);padding:32px 20px;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.upload-area:hover{border-color:var(--c1);background:rgba(56,189,248,.04)}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-preview{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-top:12px;display:none}
+/* ---- SEVERITY ---- */
+.sev-slider{width:100%;-webkit-appearance:none;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--green),var(--yellow),var(--red));outline:none}
+.sev-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--c1);cursor:pointer;border:3px solid var(--bg)}
+/* ---- BTN ---- */
+.btn{padding:10px 20px;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;border:none;font-family:var(--font);transition:all .18s;display:inline-flex;align-items:center;gap:7px}
+.btn-primary{background:linear-gradient(135deg,var(--c1),#0ea5e9);color:#fff}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--c1)}
+.btn-outline:hover{background:rgba(56,189,248,.08)}
+.btn-full{width:100%;justify-content:center;padding:14px}
+/* ---- ROUTE BANNER ---- */
+.route-banner{background:linear-gradient(135deg,rgba(56,189,248,.08),rgba(167,139,250,.08));border:1px solid rgba(56,189,248,.25);border-radius:var(--r);padding:14px 16px;display:none;margin-top:16px;animation:pageIn .3s ease}
+.route-banner h4{font-size:.85rem;font-weight:700;color:var(--c1);margin-bottom:4px}
+.route-banner p{font-size:.8rem;color:var(--text2)}
+/* ---- TRACKING ---- */
+.track-box{display:flex;gap:10px;margin-bottom:10px}
+.track-hint{font-size:.78rem;color:var(--text3);font-family:var(--mono);margin-bottom:22px}
+.track-result{background:var(--glass);border:1px solid var(--border);border-radius:var(--r2);padding:24px;display:none;animation:pageIn .3s ease}
+.track-id{font-family:var(--mono);font-size:1.4rem;font-weight:500;color:var(--c1);margin-bottom:5px}
+.track-desc{font-size:.85rem;color:var(--text2);margin-bottom:26px}
+.timeline{position:relative;padding-left:52px}
+.timeline::before{content:'';position:absolute;left:19px;top:8px;bottom:8px;width:2px;background:var(--border)}
+.tl-item{margin-bottom:22px;position:relative}
+.tl-dot{position:absolute;left:-52px;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;border:2px solid var(--border);background:var(--bg2);z-index:1}
+.tl-dot.done{border-color:var(--green);background:rgba(34,197,94,.12)}
+.tl-dot.current{border-color:var(--c1);background:rgba(56,189,248,.12);animation:blink 1.8s infinite}
+.tl-title{font-weight:700;font-size:.88rem;margin-bottom:3px}
+.tl-time{font-size:.72rem;color:var(--text2);font-family:var(--mono)}
+.no-result{text-align:center;padding:40px 20px;color:var(--text2);display:none}
+.no-result .big{font-size:2.5rem;margin-bottom:12px}
+/* ---- DASH ---- */
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.dash-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:18px;backdrop-filter:blur(10px)}
+.dash-num{font-size:1.9rem;font-weight:900;letter-spacing:-1.5px;margin-bottom:3px}
+.dash-lbl{font-size:.73rem;color:var(--text2);font-family:var(--mono)}
+.dash-chg{font-size:.73rem;margin-top:7px;font-weight:600}
+.up{color:var(--green)}.dn{color:var(--red)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chart-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.chart-card h3{font-size:.88rem;font-weight:700;color:var(--c1);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bar-lbl{font-size:.72rem;color:var(--text2);width:72px;font-family:var(--mono);flex-shrink:0}
+.bar-track{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.bar-val{font-size:.72rem;font-family:var(--mono);color:var(--text2);width:38px;text-align:right;flex-shrink:0}
+/* ---- HEATMAP ---- */
+.heatmap-canvas{position:relative;height:210px;background:linear-gradient(180deg,#04111f,#071828);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.heatmap-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(56,189,248,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.03) 1px,transparent 1px);background-size:30px 30px}
+.hm-road-h{position:absolute;height:3px;left:0;right:0;background:rgba(56,189,248,.18)}
+.hm-road-v{position:absolute;width:3px;top:0;bottom:0;background:rgba(56,189,248,.18)}
+.hm-dot{position:absolute;border-radius:50%;filter:blur(18px);opacity:.45}
+.hm-pin{position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid #fff;transform:translate(-50%,-50%);cursor:pointer;transition:transform .2s}
+.hm-pin:hover{transform:translate(-50%,-50%) scale(1.4);z-index:10}
+.hm-pin-tip{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:4px 8px;font-size:.68rem;white-space:nowrap;display:none;font-family:var(--mono);color:var(--text)}
+.hm-pin:hover .hm-pin-tip{display:block}
+.hmap-legend{position:absolute;bottom:10px;right:10px;display:flex;gap:6px}
+/* ---- CONTRACTOR ---- */
+.cont-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;gap:14px;margin-bottom:10px;transition:all .18s}
+.cont-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.cont-av{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cont-name{font-weight:700;font-size:.95rem;margin-bottom:3px}
+.cont-meta{font-size:.75rem;color:var(--text2);margin-bottom:9px}
+.stars{color:var(--yellow);font-size:.85rem}
+.m-row{display:flex;gap:18px;margin-top:9px;flex-wrap:wrap}
+.metric{text-align:center}
+.m-val{font-size:1rem;font-weight:800;letter-spacing:-.5px}
+.m-key{font-size:.65rem;color:var(--text2);font-family:var(--mono);margin-top:1px}
+/* ---- AI DETECT ---- */
+.ai-up-area{border:2px dashed var(--border2);border-radius:var(--r2);padding:44px 20px;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;margin-bottom:18px}
+.ai-up-area:hover{border-color:var(--c1);background:rgba(56,189,248,.04)}
+.ai-up-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+#aiPreview{width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-top:14px;display:none;border:1px solid var(--border2)}
+.scan-wrap{display:none;text-align:center;padding:18px}
+.scan-track{height:3px;background:rgba(56,189,248,.1);border-radius:2px;overflow:hidden;margin:10px 0 7px;position:relative}
+.scan-run{position:absolute;top:0;left:-60%;width:60%;height:100%;background:linear-gradient(90deg,transparent,var(--c1),transparent);animation:scanrun 1.3s linear infinite}
+@keyframes scanrun{to{left:110%}}
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ai-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:15px;display:none;animation:pageIn .3s ease}
+.ai-card h4{font-size:.82rem;font-weight:700;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
+.ai-bar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin:7px 0}
+.ai-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.ai-sub{font-size:.75rem;color:var(--text2)}
+.ai-rec{display:none;background:var(--glass);border:1px solid var(--border2);border-radius:var(--r);padding:16px;margin-top:14px;animation:pageIn .3s ease}
+.ai-rec h3{font-size:.9rem;color:var(--c1);font-weight:700;margin-bottom:9px}
+.ai-rec p{font-size:.83rem;color:var(--text2);line-height:1.65}
+/* ---- ROAD DETAIL ---- */
+.rd-grid{display:grid;grid-template-columns:3fr 2fr;gap:18px}
+.detail-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px;backdrop-filter:blur(10px)}
+.detail-card h3{font-size:.88rem;font-weight:700;color:var(--c1);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.d-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)}
+.d-row:last-child{border:none}
+.d-key{font-size:.77rem;color:var(--text2);font-family:var(--mono)}
+.d-val{font-size:.82rem;font-weight:600;text-align:right;max-width:60%}
+.score-ring{width:108px;height:108px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.9rem;font-weight:900;letter-spacing:-2px}
+/* ---- CHATBOT ---- */
+.chat-toggle{position:fixed;bottom:22px;right:22px;width:56px;height:56px;background:linear-gradient(135deg,var(--c1),var(--c2));border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px;z-index:1000;box-shadow:0 6px 28px rgba(56,189,248,.4);border:none;transition:transform .2s}
+.chat-toggle:hover{transform:scale(1.1)}
+.chat-notif{position:absolute;top:-2px;right:-2px;width:15px;height:15px;background:var(--red);border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;border:2px solid var(--bg)}
+.chat-win{position:fixed;bottom:90px;right:22px;width:360px;height:510px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);z-index:1000;display:none;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.55);overflow:hidden;animation:pageIn .25s ease}
+.chat-win.open{display:flex}
+.chat-hdr{padding:14px 18px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.chat-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--c1),var(--c2));display:flex;align-items:center;justify-content:center;font-size:15px}
+.chat-name{font-weight:800;font-size:.88rem}
+.chat-status{font-size:.68rem;color:var(--green);font-family:var(--mono)}
+.chat-x{background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:17px;line-height:1}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.chat-msgs::-webkit-scrollbar{width:3px}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.msg{max-width:84%;animation:pageIn .25s ease}
+.msg.bot{align-self:flex-start}.msg.user{align-self:flex-end}
+.msg-bub{padding:9px 13px;border-radius:13px;font-size:.82rem;line-height:1.5}
+.bot .msg-bub{background:var(--bg3);border:1px solid var(--border);border-bottom-left-radius:3px;color:var(--text)}
+.user .msg-bub{background:linear-gradient(135deg,var(--c1),#0ea5e9);color:#fff;border-bottom-right-radius:3px}
+.msg-time{font-size:.63rem;color:var(--text3);margin-top:3px;font-family:var(--mono)}
+.user .msg-time{text-align:right}
+.info-card{background:rgba(56,189,248,.08);border:1px solid var(--border2);border-radius:9px;padding:10px;margin-top:8px}
+.info-card h5{font-size:.78rem;color:var(--c1);margin-bottom:5px;font-weight:700}
+.info-card p{font-size:.75rem;color:var(--text2);line-height:1.55}
+.q-btns{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.q-btn{padding:4px 9px;background:rgba(56,189,248,.09);border:1px solid var(--border2);border-radius:100px;font-size:.72rem;color:var(--c1);cursor:pointer;font-family:var(--font);transition:background .15s}
+.q-btn:hover{background:rgba(56,189,248,.18)}
+.chat-bottom{padding:12px;border-top:1px solid var(--border)}
+.chat-row{display:flex;gap:7px}
+.chat-inp{flex:1;padding:9px 13px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:.82rem;outline:none;font-family:var(--font)}
+.chat-inp:focus{border-color:var(--c1)}
+.chat-send{padding:9px 13px;background:linear-gradient(135deg,var(--c1),#0ea5e9);border:none;border-radius:9px;color:#fff;cursor:pointer;font-size:13px}
+/* ---- COMPLAINTS LIST ---- */
+.cplt-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.cplt-item:last-child{border:none}
+.cplt-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.cplt-title{font-size:.87rem;font-weight:700;margin-bottom:2px}
+.cplt-meta{font-size:.73rem;color:var(--text2)}
+.scroll-box{max-height:300px;overflow-y:auto}
+.scroll-box::-webkit-scrollbar{width:3px}
+.scroll-box::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+/* ---- OFFLINE ---- */
+.offline-bar{background:rgba(234,179,8,.09);border:1px solid rgba(234,179,8,.28);border-radius:9px;padding:9px 14px;display:none;align-items:center;gap:9px;margin-bottom:14px;font-size:.8rem;color:var(--yellow)}
+/* ---- GPS ---- */
+.gps-status{font-size:.73rem;color:var(--text2);margin-top:5px;font-family:var(--mono);min-height:16px}
+/* ---- RESPONSIVE ---- */
+@media(max-width:900px){
+  .nav-links{display:none}
+  .stats-row,.card-grid,.dash-grid,.two-col,.f-row,.rd-grid,.ai-grid{grid-template-columns:1fr 1fr}
+  .hero h1{font-size:2rem}
+}
+@media(max-width:580px){
+  .stats-row,.card-grid,.dash-grid,.two-col,.f-row,.rd-grid,.ai-grid,.cat-grid{grid-template-columns:1fr}
+  .hero{padding:36px 16px 28px}
+  .hero h1{font-size:1.7rem}
+  .chat-win{width:calc(100vw - 28px);right:14px}
+  .container{padding:0 14px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" onclick="showPage('home')">
+      <div class="logo-mark">🛣️</div>
+      <div class="logo-text">ROAD<em>WATCH</em> AI</div>
+    </a>
+    <div class="nav-links">
+      <div class="nl on" onclick="nav(this,'home')">Home</div>
+      <div class="nl" onclick="nav(this,'roads')">Roads</div>
+      <div class="nl" onclick="nav(this,'complain')">Report</div>
+      <div class="nl" onclick="nav(this,'track')">Track</div>
+      <div class="nl" onclick="nav(this,'dashboard')">Dashboard</div>
+      <div class="nl" onclick="nav(this,'contractors')">Contractors</div>
+      <div class="nl" onclick="nav(this,'aidetect')">AI Detect</div>
+    </div>
+    <button class="nav-cta" onclick="nav(document.querySelector('.nl'),'complain');showPage('complain')">⚠ Report Issue</button>
+  </div>
+</nav>
+
+<!-- ===== HOME ===== -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-pill"><span class="pill-dot"></span>AI-Powered Infrastructure Monitoring · Live</div>
+    <h1>Transparent Roads,<br><span class="gr">Accountable Government</span></h1>
+    <p class="hero-sub">Real-time road monitoring, budget transparency, and citizen-driven accountability powered by AI.</p>
+    <div class="hero-search">
+      <input type="text" placeholder="Search road name, locality, or project ID…" id="heroSearch">
+      <button onclick="doSearch()">🔍 Search</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n" id="sn1">0</div><div class="stat-l">Roads Monitored</div></div>
+      <div class="stat"><div class="stat-n" id="sn2">0</div><div class="stat-l">Active Complaints</div></div>
+      <div class="stat"><div class="stat-n" id="sn3">₹0Cr</div><div class="stat-l">Budget Tracked</div></div>
+      <div class="stat"><div class="stat-n" id="sn4">0%</div><div class="stat-l">Resolution Rate</div></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-title">🗺 <span>Live Road Map</span></div>
+        <span style="font-size:.75rem;color:var(--text2);font-family:var(--mono)">Click markers for details</span>
+      </div>
+      <div class="map-wrap" id="mainMap">
+        <div class="map-grid-bg"></div>
+        <div class="road-h" style="top:29%;background:rgba(56,189,248,.45);height:6px"></div>
+        <div class="road-h" style="top:54%;background:rgba(56,189,248,.28);height:4px"></div>
+        <div class="road-h" style="top:73%;background:rgba(239,68,68,.45);height:5px"></div>
+        <div class="road-v" style="left:24%;background:rgba(56,189,248,.38)"></div>
+        <div class="road-v" style="left:60%;background:rgba(56,189,248,.28)"></div>
+        <div class="road-v" style="left:80%;background:rgba(234,179,8,.35)"></div>
+        <div class="mmarker bad" style="top:26%;left:18%" onclick="showMPop(this,'Poonamallee High Rd','Pothole reported · Critical','bad',5)">⚠️</div>
+        <div class="mmarker ok"  style="top:24%;left:54%" onclick="showMPop(this,'Anna Salai (NH-48)','Excellent condition · Good','ok',1)">✅</div>
+        <div class="mmarker wip" style="top:48%;left:37%" onclick="showMPop(this,'GST Road (NH-44)','Under construction','wip',2)">🚧</div>
+        <div class="mmarker bad" style="top:68%;left:64%" onclick="showMPop(this,'Velachery Main Rd','Waterlogging issue','bad',3)">🌊</div>
+        <div class="mmarker ok"  style="top:18%;left:74%" onclick="showMPop(this,'OMR IT Corridor','Recently relaid · Good','ok',4)">✅</div>
+        <div class="mmarker wip" style="top:53%;left:16%" onclick="showMPop(this,'Madhuravoyal Link Rd','Widening project','wip',6)">🏗️</div>
+        <div id="mpop" class="mpop"></div>
+        <div class="mleg">
+          <div class="mleg-item"><div class="mleg-dot" style="background:var(--red)"></div>Damaged</div>
+          <div class="mleg-item"><div class="mleg-dot" style="background:var(--yellow)"></div>Construction</div>
+          <div class="mleg-item"><div class="mleg-dot" style="background:var(--green)"></div>Good</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-title">🛣 <span>Featured Roads</span></div>
+        <button class="btn btn-outline" onclick="nav(null,'roads')">View All</button>
+      </div>
+      <div class="card-grid" id="featuredRoads"></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-title">📋 <span>Recent Complaints</span></div>
+        <button class="btn btn-outline" onclick="nav(null,'track')">Track Yours</button>
+      </div>
+      <div class="card"><div class="scroll-box" id="recentCplt"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ROADS ===== -->
+<div id="page-roads" class="page">
+  <div class="container section">
+    <div class="sec-head">
+      <div class="sec-title">🛣 <span>Road Database</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input class="f-input" style="width:200px" placeholder="Search…" id="roadSearchQ" oninput="filterRoads()">
+        <select class="f-input" style="width:155px" id="roadTypeF" onchange="filterRoads()">
+          <option value="">All Types</option>
+          <option>National Highway</option><option>State Highway</option>
+          <option>City Road</option><option>MDR</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-grid" id="roadsGrid"></div>
+  </div>
+</div>
+
+<!-- ===== ROAD DETAIL ===== -->
+<div id="page-roaddetail" class="page">
+  <div class="container section">
+    <button class="btn btn-outline" style="margin-bottom:18px" onclick="nav(null,'roads')">← Back</button>
+    <div class="rd-grid">
+      <div>
+        <div class="detail-card"><h3>📍 Road Information</h3><div id="rdInfo"></div></div>
+        <div class="detail-card"><h3>💰 Budget</h3><div id="rdBudget"></div></div>
+        <div class="detail-card"><h3>🔧 Repair History</h3><div id="rdRepair"></div></div>
+      </div>
+      <div>
+        <div class="detail-card" style="text-align:center">
+          <div id="rdScore"></div>
+        </div>
+        <div class="detail-card"><h3>🏗 Contractor</h3><div id="rdCont"></div></div>
+        <button class="btn btn-primary btn-full" style="margin-top:6px" onclick="nav(null,'complain')">Report Issue on This Road</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== COMPLAIN ===== -->
+<div id="page-complain" class="page">
+  <div class="container section">
+    <div class="sec-title" style="margin-bottom:22px">📝 <span>Report Road Issue</span></div>
+    <div class="form-wrap">
+      <div class="offline-bar" id="offlineBar">📡 Offline — will sync when connected</div>
+      <div class="tabs-bar">
+        <div class="tab on" onclick="setCtab(0,this)">🕳 Road Damage</div>
+        <div class="tab" onclick="setCtab(1,this)">🚦 Facilities</div>
+        <div class="tab" onclick="setCtab(2,this)">🏗 Construction</div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Category</label>
+        <div class="cat-grid" id="catGrid"></div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Road Name / Location</label>
+        <input class="f-input" placeholder="Type road or use GPS…" id="fRoad">
+      </div>
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">District</label>
+          <select class="f-input" id="fDist">
+            <option>Chennai</option><option>Coimbatore</option><option>Madurai</option><option>Trichy</option><option>Salem</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">State</label>
+          <select class="f-input" id="fState">
+            <option>Tamil Nadu</option><option>Kerala</option><option>Karnataka</option><option>Maharashtra</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Description</label>
+        <textarea class="f-input" placeholder="Describe the issue in detail…" id="fDesc"></textarea>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Severity: <span id="sevLbl" style="color:var(--yellow)">Medium (5)</span></label>
+        <input type="range" class="sev-slider" min="1" max="10" value="5" id="sevSlider" oninput="updSev(this)">
+      </div>
+      <div class="f-group">
+        <label class="f-label">Upload Photo</label>
+        <div class="upload-area" id="cUploadArea">
+          <input type="file" accept="image/jpg,image/jpeg,image/png" id="cFileInput" onchange="handleCUpload(event)">
+          <div id="cUploadInner">
+            <div style="font-size:2rem;margin-bottom:8px">📷</div>
+            <div style="font-weight:600;margin-bottom:4px">Click to upload image</div>
+            <div style="font-size:.76rem;color:var(--text2)">JPG, PNG up to 20MB</div>
+          </div>
+          <img id="cImgPreview" class="upload-preview">
+        </div>
+      </div>
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">GPS Location</label>
+          <button class="btn btn-outline" style="width:100%" onclick="getGPS()">📍 Use My Location</button>
+          <div class="gps-status" id="gpsStatus"></div>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Options</label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.83rem;color:var(--text2);padding:9px 0">
+            <input type="checkbox" id="anonCheck" style="accent-color:var(--c1)"> File Anonymously
+          </label>
+        </div>
+      </div>
+      <div class="route-banner" id="routeBanner">
+        <h4>🛰 Auto-Routing Complete</h4>
+        <p id="routeText"></p>
+      </div>
+      <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="submitComplaint()">Submit Complaint →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TRACK ===== -->
+<div id="page-track" class="page">
+  <div class="container section">
+    <div class="sec-title" style="margin-bottom:22px">🔍 <span>Track Complaint</span></div>
+    <div class="track-box">
+      <input class="f-input" placeholder="Enter Complaint ID  e.g. RW-CHN-2045" id="trackInput" style="flex:1" onkeydown="if(event.key==='Enter')doTrack()">
+      <button class="btn btn-primary" onclick="doTrack()">Track</button>
+    </div>
+    <div class="track-hint">Demo IDs: RW-CHN-2045 · RW-CBE-1822 · RW-MDU-0918 — or use your submitted complaint ID</div>
+    <div id="trackResult" class="track-result"></div>
+    <div id="trackNone" class="no-result"><div class="big">🔎</div><div style="font-weight:700;margin-bottom:6px">Complaint Not Found</div><div style="font-size:.83rem">Check the ID and try again</div></div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="page-dashboard" class="page">
+  <div class="container section">
+    <div class="sec-title" style="margin-bottom:22px">📊 <span>Budget & Analytics</span></div>
+    <div class="dash-grid">
+      <div class="dash-card"><div class="dash-num" style="color:var(--c1)">₹847 Cr</div><div class="dash-lbl">Total Sanctioned</div><div class="dash-chg up">↑ 12.4% from last year</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--green)">₹612 Cr</div><div class="dash-lbl">Amount Spent</div><div class="dash-chg up">↑ 8.1% this quarter</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--yellow)">₹235 Cr</div><div class="dash-lbl">Remaining Budget</div><div class="dash-chg dn">↓ Utilization gap</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--red)">1,284</div><div class="dash-lbl">Active Complaints</div><div class="dash-chg dn">↑ 6.2% this month</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--green)">4,712</div><div class="dash-lbl">Resolved Complaints</div><div class="dash-chg up">↑ 22% resolution rate</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--c4)">38</div><div class="dash-lbl">Ongoing Projects</div><div class="dash-chg up">On schedule: 24</div></div>
+    </div>
+    <div class="two-col">
+      <div class="chart-card">
+        <h3>📊 Complaint Categories</h3>
+        <div class="bar-row"><div class="bar-lbl">Potholes</div><div class="bar-track"><div class="bar-fill" style="width:78%;background:var(--red)"></div></div><div class="bar-val">78%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Cracks</div><div class="bar-track"><div class="bar-fill" style="width:54%;background:var(--c3)"></div></div><div class="bar-val">54%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Waterlog</div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--c1)"></div></div><div class="bar-val">42%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Lights</div><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--yellow)"></div></div><div class="bar-val">35%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Signals</div><div class="bar-track"><div class="bar-fill" style="width:22%;background:var(--c2)"></div></div><div class="bar-val">22%</div></div>
+        <div class="bar-row"><div class="bar-lbl">Quality</div><div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--c4)"></div></div><div class="bar-val">18%</div></div>
+      </div>
+      <div class="chart-card">
+        <h3>🗺 Complaint Heatmap</h3>
+        <div class="heatmap-canvas" id="heatmapCanvas">
+          <div class="heatmap-grid"></div>
+          <div class="hm-road-h" style="top:35%"></div>
+          <div class="hm-road-h" style="top:62%"></div>
+          <div class="hm-road-v" style="left:28%"></div>
+          <div class="hm-road-v" style="left:65%"></div>
+          <!-- heat blobs -->
+          <div class="hm-dot" style="width:90px;height:90px;background:var(--red);top:18%;left:20%"></div>
+          <div class="hm-dot" style="width:110px;height:110px;background:var(--red);top:44%;left:52%"></div>
+          <div class="hm-dot" style="width:65px;height:65px;background:var(--yellow);top:25%;left:65%"></div>
+          <div class="hm-dot" style="width:75px;height:75px;background:var(--yellow);top:55%;left:10%"></div>
+          <div class="hm-dot" style="width:55px;height:55px;background:var(--c3);top:10%;left:42%"></div>
+          <div class="hm-dot" style="width:50px;height:50px;background:var(--green);top:65%;left:78%"></div>
+          <!-- pins -->
+          <div class="hm-pin" style="background:var(--red);top:30%;left:26%"><div class="hm-pin-tip">Poonamallee · 12 complaints</div></div>
+          <div class="hm-pin" style="background:var(--red);top:52%;left:58%"><div class="hm-pin-tip">Velachery · 18 complaints</div></div>
+          <div class="hm-pin" style="background:var(--yellow);top:32%;left:68%"><div class="hm-pin-tip">Nungambakkam · 7</div></div>
+          <div class="hm-pin" style="background:var(--yellow);top:62%;left:15%"><div class="hm-pin-tip">Ambattur · 9 complaints</div></div>
+          <div class="hm-pin" style="background:var(--green);top:70%;left:80%"><div class="hm-pin-tip">OMR · 2 complaints</div></div>
+          <div class="hmap-legend">
+            <div class="mleg-item"><div class="mleg-dot" style="background:var(--red)"></div>High</div>
+            <div class="mleg-item"><div class="mleg-dot" style="background:var(--yellow)"></div>Med</div>
+            <div class="mleg-item"><div class="mleg-dot" style="background:var(--green)"></div>Low</div>
+          </div>
+          <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:.66rem;color:var(--text2);font-family:var(--mono)">Chennai Metro · Hover pins for details</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>🏆 Budget by Road Type</h3>
+        <div class="bar-row"><div class="bar-lbl">NH Roads</div><div class="bar-track"><div class="bar-fill" style="width:85%;background:linear-gradient(90deg,var(--c1),var(--c2))"></div></div><div class="bar-val">₹312Cr</div></div>
+        <div class="bar-row"><div class="bar-lbl">SH Roads</div><div class="bar-track"><div class="bar-fill" style="width:62%;background:linear-gradient(90deg,var(--c4),#7c3aed)"></div></div><div class="bar-val">₹224Cr</div></div>
+        <div class="bar-row"><div class="bar-lbl">City Roads</div><div class="bar-track"><div class="bar-fill" style="width:48%;background:linear-gradient(90deg,var(--c3),var(--yellow))"></div></div><div class="bar-val">₹178Cr</div></div>
+        <div class="bar-row"><div class="bar-lbl">MDR</div><div class="bar-track"><div class="bar-fill" style="width:38%;background:linear-gradient(90deg,var(--green),var(--c2))"></div></div><div class="bar-val">₹133Cr</div></div>
+      </div>
+      <div class="chart-card">
+        <h3>📈 Monthly Resolutions</h3>
+        <div class="bar-row"><div class="bar-lbl">Jan</div><div class="bar-track"><div class="bar-fill" style="width:60%;background:var(--green)"></div></div><div class="bar-val">248</div></div>
+        <div class="bar-row"><div class="bar-lbl">Feb</div><div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--green)"></div></div><div class="bar-val">312</div></div>
+        <div class="bar-row"><div class="bar-lbl">Mar</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--yellow)"></div></div><div class="bar-val">228</div></div>
+        <div class="bar-row"><div class="bar-lbl">Apr</div><div class="bar-track"><div class="bar-fill" style="width:82%;background:var(--green)"></div></div><div class="bar-val">340</div></div>
+        <div class="bar-row"><div class="bar-lbl">May</div><div class="bar-track"><div class="bar-fill" style="width:70%;background:var(--green)"></div></div><div class="bar-val">291</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONTRACTORS ===== -->
+<div id="page-contractors" class="page">
+  <div class="container section">
+    <div class="sec-title" style="margin-bottom:22px">🏗 <span>Contractor Transparency</span></div>
+    <div id="contList"></div>
+  </div>
+</div>
+
+<!-- ===== AI DETECT ===== -->
+<div id="page-aidetect" class="page">
+  <div class="container section" style="max-width:720px">
+    <div class="sec-title" style="margin-bottom:8px">🤖 <span>AI Road Damage Detection</span></div>
+    <p style="color:var(--text2);margin-bottom:24px;font-size:.88rem">Upload a road photo — our AI detects potholes, cracks, and water damage instantly.</p>
+    <div class="ai-up-area" id="aiUpArea">
+      <input type="file" accept="image/jpg,image/jpeg,image/png" id="aiFileInput" onchange="handleAIUpload(event)">
+      <div id="aiUpInner">
+        <div style="font-size:3rem;margin-bottom:10px">📸</div>
+        <div style="font-weight:700;font-size:1.05rem;margin-bottom:6px">Click to Upload Road Image</div>
+        <div style="font-size:.8rem;color:var(--text2)">JPG, PNG — AI analysis in seconds</div>
+      </div>
+      <img id="aiPreview" style="display:none;width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-top:14px;border:1px solid var(--border2)">
+    </div>
+    <div id="aiWarn" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px 16px;font-size:.85rem;color:var(--red);margin-bottom:14px">⚠ Please upload an image first before running analysis.</div>
+    <button class="btn btn-primary" style="margin-bottom:18px" id="aiAnalyseBtn" onclick="runAI()">🤖 Analyse Image</button>
+    <div class="scan-wrap" id="scanWrap">
+      <p style="font-family:var(--mono);color:var(--c1);margin-bottom:10px;font-size:.82rem">🤖 Analysing road surface…</p>
+      <div class="scan-track"><div class="scan-run"></div></div>
+      <p style="font-size:.73rem;color:var(--text3);font-family:var(--mono)" id="scanStep">Detecting surface anomalies…</p>
+    </div>
+    <div class="ai-grid" id="aiGrid">
+      <div class="ai-card" id="aiC1"><h4><span>🕳 Potholes</span><span style="color:var(--red)">HIGH</span></h4><div class="ai-bar"><div class="ai-fill" id="aif1" style="width:0%;background:var(--red)"></div></div><div class="ai-sub" id="ais1"></div></div>
+      <div class="ai-card" id="aiC2"><h4><span>⚡ Cracks</span><span style="color:var(--yellow)">MED</span></h4><div class="ai-bar"><div class="ai-fill" id="aif2" style="width:0%;background:var(--yellow)"></div></div><div class="ai-sub" id="ais2"></div></div>
+      <div class="ai-card" id="aiC3"><h4><span>🌊 Water Damage</span><span style="color:var(--c1)">LOW</span></h4><div class="ai-bar"><div class="ai-fill" id="aif3" style="width:0%;background:var(--c1)"></div></div><div class="ai-sub" id="ais3"></div></div>
+      <div class="ai-card" id="aiC4"><h4><span>📊 Overall Severity</span></h4><div class="ai-bar" style="height:8px"><div class="ai-fill" id="aif4" style="width:0%;background:linear-gradient(90deg,var(--green),var(--red))"></div></div><div class="ai-sub" id="ais4" style="color:var(--red);font-weight:700;margin-top:5px"></div></div>
+    </div>
+    <div class="ai-rec" id="aiRec">
+      <h3>🤖 AI Recommendation</h3>
+      <p id="aiRecText"></p>
+      <button class="btn btn-primary" style="margin-top:12px" onclick="nav(null,'complain')">Auto-File Complaint →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHATBOT TOGGLE -->
+<button class="chat-toggle" onclick="toggleChat()">🤖<div class="chat-notif" id="cNotif">1</div></button>
+<div class="chat-win" id="chatWin">
+  <div class="chat-hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="chat-av">🤖</div>
+      <div><div class="chat-name">RoadWatch AI</div><div class="chat-status">● Online · Civic AI</div></div>
+    </div>
+    <button class="chat-x" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs">
+    <div class="msg bot">
+      <div class="msg-bub">👋 Hi! I'm <strong>RoadWatch AI</strong>. Ask me about roads, complaints, or budgets.
+        <div class="q-btns">
+          <span class="q-btn" onclick="askBot('Who built Anna Salai?')">Who built a road?</span>
+          <span class="q-btn" onclick="askBot('File pothole complaint')">Report pothole</span>
+          <span class="q-btn" onclick="askBot('Track RW-CHN-2045')">Track complaint</span>
+          <span class="q-btn" onclick="askBot('GST Road budget')">Road budget</span>
+        </div>
+      </div>
+      <div class="msg-time">Just now</div>
+    </div>
+  </div>
+  <div class="chat-bottom">
+    <div class="chat-row">
+      <input class="chat-inp" placeholder="Ask about any road…" id="chatInp" onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const roads=[
+  {id:1,name:"Anna Salai (NH-48)",type:"National Highway",len:"23 km",thick:"200 mm",contractor:"L&T Infrastructure Ltd",cid:1,phone:"+91-44-28290000",email:"lnt@infra.com",relay:"Jan 2023",repairs:["2019 – Full Resurfacing","2021 – Patch Work","2023 – Full Relay"],start:"Aug 2022",life:"15 yrs",bud:"₹84 Cr",spent:"₹82 Cr",status:"Completed",health:88,zone:"Chennai South",auth:"NHAI"},
+  {id:2,name:"GST Road (NH-44)",type:"National Highway",len:"45 km",thick:"220 mm",contractor:"GR Infraprojects",cid:2,phone:"+91-44-22340000",email:"gr@infra.com",relay:"Mar 2024",repairs:["2020 – Crack Sealing","2022 – Overlay","2024 – Partial Relay"],start:"Sep 2023",life:"15 yrs",bud:"₹120 Cr",spent:"₹75 Cr",status:"In Progress",health:72,zone:"Chennai South",auth:"NHAI"},
+  {id:3,name:"Velachery Main Road",type:"City Road",len:"8 km",thick:"150 mm",contractor:"AFCONS Infrastructure",cid:3,phone:"+91-44-22567890",email:"afcons@infra.com",relay:"Jun 2022",repairs:["2018 – Overlay","2020 – Pothole Filling","2022 – Partial Relay"],start:"Nov 2021",life:"8 yrs",bud:"₹22 Cr",spent:"₹21 Cr",status:"Completed",health:45,zone:"Chennai South",auth:"GCC"},
+  {id:4,name:"OMR IT Corridor (SH-49)",type:"State Highway",len:"38 km",thick:"180 mm",contractor:"KNR Constructions",cid:4,phone:"+91-44-24210000",email:"knr@infra.com",relay:"Dec 2023",repairs:["2021 – Widening","2023 – Full Relay"],start:"Jan 2023",life:"12 yrs",bud:"₹68 Cr",spent:"₹66 Cr",status:"Completed",health:91,zone:"Chennai East",auth:"TNHB"},
+  {id:5,name:"Poonamallee High Road",type:"State Highway",len:"18 km",thick:"170 mm",contractor:"NCC Limited",cid:5,phone:"+91-44-26423000",email:"ncc@infra.com",relay:"Aug 2021",repairs:["2018 – Patch Work","2021 – Overlay"],start:"Apr 2021",life:"10 yrs",bud:"₹38 Cr",spent:"₹37 Cr",status:"Completed",health:38,zone:"Chennai West",auth:"Highways Dept TN"},
+  {id:6,name:"Madhuravoyal Link Road",type:"City Road",len:"4 km",thick:"140 mm",contractor:"ITD Cementation",cid:6,phone:"+91-44-26100000",email:"itd@infra.com",relay:"Nov 2022",repairs:["2019 – Patch Work","2022 – Overlay"],start:"Jun 2022",life:"8 yrs",bud:"₹12 Cr",spent:"₹11 Cr",status:"Completed",health:55,zone:"Chennai West",auth:"GCC"},
+  {id:7,name:"Mount-Poonamallee Road",type:"MDR",len:"12 km",thick:"160 mm",contractor:"HG Infra Engineering",cid:7,phone:"+91-44-26780000",email:"hg@infra.com",relay:"Feb 2020",repairs:["2017 – Full Lay","2020 – Partial Relay"],start:"Oct 2019",life:"10 yrs",bud:"₹28 Cr",spent:"₹27 Cr",status:"Completed",health:33,zone:"Chennai West",auth:"Highways Dept TN"},
+  {id:8,name:"ECR (East Coast Road)",type:"State Highway",len:"52 km",thick:"190 mm",contractor:"Dilip Buildcon",cid:8,phone:"+91-44-24420000",email:"dilip@infra.com",relay:"Oct 2023",repairs:["2020 – Widening","2023 – Full Relay"],start:"Mar 2023",life:"12 yrs",bud:"₹92 Cr",spent:"₹90 Cr",status:"Completed",health:94,zone:"Chennai South",auth:"TNHB"},
+  {id:9,name:"Ambattur Industrial Estate Rd",type:"City Road",len:"6 km",thick:"145 mm",contractor:"PNC Infratech",cid:9,phone:"+91-44-26257000",email:"pnc@infra.com",relay:"May 2021",repairs:["2019 – Patch Work","2021 – Overlay"],start:"Jan 2021",life:"8 yrs",bud:"₹14 Cr",spent:"₹13 Cr",status:"Completed",health:49,zone:"Chennai North",auth:"GCC"},
+  {id:10,name:"Nungambakkam High Road",type:"City Road",len:"5 km",thick:"150 mm",contractor:"Sadbhav Engineering",cid:10,phone:"+91-44-28297000",email:"sadbhav@infra.com",relay:"Sep 2022",repairs:["2018 – Patch Work","2020 – Overlay","2022 – Partial Relay"],start:"Apr 2022",life:"8 yrs",bud:"₹16 Cr",spent:"₹15.5 Cr",status:"Completed",health:67,zone:"Chennai Central",auth:"GCC"},
+];
+
+const contractors=[
+  {id:1,name:"L&T Infrastructure Ltd",projects:8,rating:4.5,cr:"3.2%",dr:"5%",qs:91,emoji:"🏢",col:"rgba(56,189,248,.18)"},
+  {id:2,name:"GR Infraprojects",projects:6,rating:4.1,cr:"6.1%",dr:"12%",qs:78,emoji:"🏗",col:"rgba(6,214,160,.18)"},
+  {id:3,name:"AFCONS Infrastructure",projects:5,rating:3.8,cr:"9.3%",dr:"8%",qs:71,emoji:"🔧",col:"rgba(249,115,22,.18)"},
+  {id:4,name:"KNR Constructions",projects:7,rating:4.6,cr:"2.8%",dr:"4%",qs:93,emoji:"⭐",col:"rgba(167,139,250,.18)"},
+  {id:5,name:"NCC Limited",projects:4,rating:3.2,cr:"14.5%",dr:"18%",qs:58,emoji:"🚨",col:"rgba(239,68,68,.18)"},
+];
+
+// Seed demo complaints in localStorage
+const DEMO=[
+  {id:"RW-CHN-2045",type:"Pothole",road:"Anna Salai",location:"Near Gemini Flyover, Chennai",severity:8,district:"Chennai",state:"Tamil Nadu",desc:"Large pothole causing accidents",category:"🕳 Potholes",date:"15 May 2026",status:"In Progress",
+   steps:[{s:"Submitted",t:"15 May 2026, 09:14",done:true},{s:"Under Review",t:"15 May 2026, 11:30",done:true},{s:"Assigned",t:"16 May 2026, 10:00",done:true},{s:"In Progress",t:"18 May 2026, 08:00",done:true},{s:"Resolved",t:"—",done:false}]},
+  {id:"RW-CBE-1822",type:"Waterlogging",road:"Avinashi Road",location:"Gandhipuram, Coimbatore",severity:6,district:"Coimbatore",state:"Tamil Nadu",desc:"Chronic waterlogging after rain",category:"🌊 Waterlogging",date:"10 May 2026",status:"Assigned",
+   steps:[{s:"Submitted",t:"10 May 2026, 14:22",done:true},{s:"Under Review",t:"11 May 2026, 09:00",done:true},{s:"Assigned",t:"13 May 2026, 11:00",done:true},{s:"In Progress",t:"—",done:false},{s:"Resolved",t:"—",done:false}]},
+  {id:"RW-MDU-0918",type:"Streetlight",road:"Bypass Road",location:"Madurai South",severity:4,district:"Madurai",state:"Tamil Nadu",desc:"5 streetlights not working",category:"💡 Streetlight Issue",date:"02 May 2026",status:"Resolved",
+   steps:[{s:"Submitted",t:"02 May 2026, 19:00",done:true},{s:"Under Review",t:"03 May 2026, 09:00",done:true},{s:"Assigned",t:"04 May 2026, 10:00",done:true},{s:"In Progress",t:"05 May 2026, 08:00",done:true},{s:"Resolved",t:"07 May 2026, 16:00",done:true}]},
+];
+
+const catsByType=[
+  ["🕳 Potholes","🏚 Cracks","🌊 Waterlogging","📐 Uneven Road","🌧 Rain Damage","🚰 Drainage"],
+  ["💡 Streetlight","🚦 Traffic Signal","🚧 Speed Breaker","📋 Missing Signboard","🏫 School Zone","🦓 Zebra Crossing"],
+  ["💰 Budget Misuse","🔨 Poor Quality","⚠ Unsafe Worksite","⏱ Work Delay","📏 Thickness Failure","🏗 Negligence"],
+];
+const routeMap={"National Highway":"→ Executive Engineer, NHAI – Chennai Region","State Highway":"→ District Engineer, Highways Dept TN","City Road":"→ Executive Engineer, Greater Chennai Corporation","MDR":"→ Assistant Engineer, PWD Roads Division"};
+
+let selCat='',ctab=0,chatOpen=false,aiImageUploaded=false;
+
+// Init localStorage with demo data
+function initStorage(){
+  let store=JSON.parse(localStorage.getItem('rw_complaints')||'{}');
+  let changed=false;
+  DEMO.forEach(d=>{if(!store[d.id]){store[d.id]=d;changed=true;}});
+  if(changed)localStorage.setItem('rw_complaints',JSON.stringify(store));
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('page-'+p);
+  if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+}
+function nav(el,p){
+  if(el){document.querySelectorAll('.nl').forEach(x=>x.classList.remove('on'));el.classList.add('on');}
+  showPage(p);
+}
+
+// ============================================================
+// STATS ANIMATION
+// ============================================================
+function animNum(id,to,dur,fmt){
+  const el=document.getElementById(id);const s=Date.now();
+  const t=()=>{const p=Math.min((Date.now()-s)/dur,1);el.textContent=fmt(Math.floor(to*p));if(p<1)requestAnimationFrame(t);};t();
+}
+function animateStats(){
+  animNum('sn1',roads.length*50,1200,v=>v.toLocaleString());
+  animNum('sn2',1284,1400,v=>v.toLocaleString());
+  animNum('sn4',78,1800,v=>v+'%');
+  const el=document.getElementById('sn3');const s=Date.now();
+  const t=()=>{const p=Math.min((Date.now()-s)/1600,1);el.textContent='₹'+Math.floor(847*p)+'Cr';if(p<1)requestAnimationFrame(t);};t();
+}
+
+// ============================================================
+// MAP
+// ============================================================
+function showMPop(el,name,desc,type,rid){
+  const pop=document.getElementById('mpop');
+  const col={bad:'var(--red)',ok:'var(--green)',wip:'var(--yellow)'};
+  pop.innerHTML=`<h4>${name}</h4><p style="color:${col[type]}">${desc}</p><button class="mbtn" onclick="openRoadDetail(${rid})">View Details →</button>`;
+  pop.style.top=(parseInt(el.style.top)+6)+'%';
+  pop.style.left=(parseInt(el.style.left)+4)+'%';
+  pop.style.display='block';
+  const close=e=>{if(!pop.contains(e.target)&&e.target!==el){pop.style.display='none';document.removeEventListener('click',close);}};
+  setTimeout(()=>document.addEventListener('click',close),10);
+}
+
+// ============================================================
+// ROAD CARDS
+// ============================================================
+function hc(h){return h>=90?'var(--green)':h>=70?'var(--c1)':h>=40?'var(--yellow)':'var(--red)';}
+function hl(h){return h>=90?'Excellent':h>=70?'Good':h>=40?'Poor':'Critical';}
+function typeBadge(t){
+  const m={'National Highway':'b-blue','State Highway':'b-green','City Road':'b-yellow','MDR':'b-purple'};
+  return m[t]||'b-blue';
+}
+function roadCard(r){
+  const c=hc(r.health),l=hl(r.health);
+  return `<div class="card" style="cursor:pointer" onclick="openRoadDetail(${r.id})">
+    <div class="card-head">
+      <div class="card-icon" style="background:${c}20">🛣</div>
+      <span class="badge ${typeBadge(r.type)}">${r.type.split(' ')[0]}</span>
+    </div>
+    <div class="card-title">${r.name}</div>
+    <div class="card-meta">${r.zone} · ${r.len} · ${r.status}</div>
+    <div class="hbar"><div class="hbar-fill" style="width:${r.health}%;background:${c}"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.72rem">
+      <span style="color:${c}">${l} (${r.health}/100)</span>
+      <span style="color:var(--text3);font-family:var(--mono)">Last: ${r.relay}</span>
+    </div>
+  </div>`;
+}
+function renderFeatured(){document.getElementById('featuredRoads').innerHTML=roads.slice(0,3).map(roadCard).join('');}
+function renderAllRoads(){document.getElementById('roadsGrid').innerHTML=roads.map(roadCard).join('');}
+function filterRoads(){
+  const q=document.getElementById('roadSearchQ').value.toLowerCase();
+  const t=document.getElementById('roadTypeF').value;
+  document.getElementById('roadsGrid').innerHTML=roads.filter(r=>(r.name.toLowerCase().includes(q)||r.zone.toLowerCase().includes(q))&&(!t||r.type===t)).map(roadCard).join('');
+}
+function doSearch(){
+  const q=document.getElementById('heroSearch').value;
+  nav(null,'roads');
+  setTimeout(()=>{document.getElementById('roadSearchQ').value=q;filterRoads();},50);
+}
+
+// ============================================================
+// ROAD DETAIL
+// ============================================================
+function openRoadDetail(id){
+  const r=roads.find(x=>x.id===id);if(!r)return;
+  const c=hc(r.health),l=hl(r.health);
+  const rows=(data)=>data.map(([k,v,vc])=>`<div class="d-row"><span class="d-key">${k}</span><span class="d-val"${vc?` style="color:${vc}"`:''}>${v}</span></div>`).join('');
+  document.getElementById('rdInfo').innerHTML=rows([
+    ['Road Name',r.name],['Type',r.type],['Zone',r.zone],['Length',r.len],
+    ['Thickness',r.thick],['Last Relay',r.relay],['Start Date',r.start],
+    ['Expected Lifespan',r.life],['Status',r.status],['Authority',r.auth],
+  ]);
+  const sp=parseInt(r.spent.replace(/[^0-9]/g,'')),bu=parseInt(r.bud.replace(/[^0-9]/g,'')),pct=Math.round(sp/bu*100);
+  document.getElementById('rdBudget').innerHTML=rows([
+    ['Sanctioned',r.bud,'var(--c1)'],['Spent',r.spent,'var(--green)'],['Utilization',pct+'%'],
+  ])+`<div class="hbar"><div class="hbar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--green),var(--c1))"></div></div>`;
+  document.getElementById('rdRepair').innerHTML=r.repairs.map(h=>`<div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--text2)">🔧 ${h}</div>`).join('');
+  document.getElementById('rdScore').innerHTML=`<div class="score-ring" style="background:${c}18;border:6px solid ${c}"><span style="color:${c}">${r.health}</span></div><div style="font-weight:800;font-size:1rem;color:${c}">${l}</div><div style="font-size:.75rem;color:var(--text2);margin-top:5px">Road Health Score</div>`;
+  const co=contractors.find(x=>x.id===r.cid)||contractors[0];
+  document.getElementById('rdCont').innerHTML=rows([
+    ['Company',r.contractor],['Phone',r.phone],['Email',r.email],
+    ['Rating','⭐ '+co.rating+'/5'],['Complaint Rate',co.cr,'var(--yellow)'],
+  ]);
+  nav(null,'roaddetail');
+}
+
+// ============================================================
+// RECENT COMPLAINTS
+// ============================================================
+function renderRecent(){
+  const store=JSON.parse(localStorage.getItem('rw_complaints')||'{}');
+  const list=Object.values(store).slice(0,6);
+  const sc={'In Progress':'b-yellow','Assigned':'b-blue','Resolved':'b-green','Submitted':'b-purple','Under Review':'b-purple'};
+  const ico={'Pothole':'🕳','Waterlogging':'🌊','Streetlight':'💡','Potholes':'🕳','default':'📍'};
+  document.getElementById('recentCplt').innerHTML=list.map(c=>{
+    const i=ico[c.type]||ico.default;
+    const sc2=sc[c.status]||'b-blue';
+    return `<div class="cplt-item">
+      <div class="cplt-ico" style="background:rgba(56,189,248,.1)">${i}</div>
+      <div style="flex:1">
+        <div class="cplt-title">${c.road} — ${c.category||c.type}</div>
+        <div class="cplt-meta">${c.id} · ${c.district} · ${c.date}</div>
+      </div>
+      <span class="badge ${sc2}">${c.status}</span>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// COMPLAINT FORM
+// ============================================================
+function setCtab(i,el){
+  ctab=i;selCat='';
+  document.querySelectorAll('#page-complain .tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderCatGrid();
+}
+function renderCatGrid(){
+  document.getElementById('catGrid').innerHTML=catsByType[ctab].map(c=>`<button class="cat-opt" onclick="pickCat(this,'${c}')">${c}</button>`).join('');
+}
+function pickCat(el,c){
+  document.querySelectorAll('.cat-opt').forEach(b=>b.classList.remove('chosen'));
+  el.classList.add('chosen');selCat=c;
+  const r=roads[Math.floor(Math.random()*roads.length)];
+  const b=document.getElementById('routeBanner');
+  document.getElementById('routeText').textContent='Complaint routed '+routeMap[r.type];
+  b.style.display='block';
+}
+function updSev(el){
+  const v=+el.value;
+  const lbl=v>=8?'Critical':v>=6?'High':v>=4?'Medium':'Low';
+  const col=v>=8?'var(--red)':v>=6?'var(--c3)':v>=4?'var(--yellow)':'var(--green)';
+  document.getElementById('sevLbl').textContent=lbl+' ('+v+')';
+  document.getElementById('sevLbl').style.color=col;
+}
+function getGPS(){
+  const el=document.getElementById('gpsStatus');
+  el.textContent='📍 Locating…';
+  setTimeout(()=>el.textContent='✅ 13.0827°N, 80.2707°E — Chennai, TN',1200);
+}
+function handleCUpload(e){
+  const f=e.target.files[0];if(!f)return;
+  const pr=document.getElementById('cImgPreview');
+  const reader=new FileReader();
+  reader.onload=ev=>{pr.src=ev.target.result;pr.style.display='block';};
+  reader.readAsDataURL(f);
+  document.getElementById('cUploadInner').innerHTML=`<div style="font-size:1.5rem">✅</div><div style="font-weight:600;margin-top:6px">${f.name}</div>`;
+}
+function submitComplaint(){
+  const road=document.getElementById('fRoad').value.trim()||'Unknown Road';
+  const dist=document.getElementById('fDist').value;
+  const state=document.getElementById('fState').value;
+  const desc=document.getElementById('fDesc').value.trim();
+  const sev=+document.getElementById('sevSlider').value;
+  if(!selCat){alert('Please select a complaint category.');return;}
+  if(!desc){alert('Please enter a description.');return;}
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const prefix='RW-'+dist.slice(0,3).toUpperCase()+'-';
+  const num=String(Math.floor(1000+Math.random()*9000));
+  const id=prefix+num;
+  const obj={id,type:selCat.replace(/[^\w\s]/g,'').trim(),category:selCat,road,location:road+', '+dist,district:dist,state,desc,severity:sev,date:dateStr,status:'Submitted',
+    steps:[
+      {s:'Submitted',t:dateStr+', '+timeStr,done:true},
+      {s:'Under Review',t:'—',done:false},
+      {s:'Assigned',t:'—',done:false},
+      {s:'In Progress',t:'—',done:false},
+      {s:'Resolved',t:'—',done:false},
+    ]};
+  const store=JSON.parse(localStorage.getItem('rw_complaints')||'{}');
+  store[id]=obj;
+  localStorage.setItem('rw_complaints',JSON.stringify(store));
+  renderRecent();
+  nav(null,'track');
+  document.getElementById('trackInput').value=id;
+  setTimeout(()=>doTrack(),100);
+}
+
+// ============================================================
+// TRACKING
+// ============================================================
+function doTrack(){
+  const q=document.getElementById('trackInput').value.trim().toUpperCase();
+  const res=document.getElementById('trackResult');
+  const none=document.getElementById('trackNone');
+  res.style.display='none';none.style.display='none';
+  const store=JSON.parse(localStorage.getItem('rw_complaints')||'{}');
+  const c=store[q];
+  if(!c){none.style.display='block';return;}
+  const sc={'In Progress':'b-yellow','Assigned':'b-blue','Resolved':'b-green','Submitted':'b-purple','Under Review':'b-blue'};
+  const icons=['📝','🔍','👤','⚙','✅'];
+  const sevCol=c.severity>=8?'var(--red)':c.severity>=6?'var(--c3)':c.severity>=4?'var(--yellow)':'var(--green)';
+  const doneCnt=c.steps.filter(x=>x.done).length;
+  const tl=c.steps.map((s,i)=>{
+    const cls=s.done?(i===doneCnt-1&&c.status!=='Resolved'?'current':'done'):'';
+    return `<div class="tl-item"><div class="tl-dot ${cls}">${s.done?icons[i]:'○'}</div><div><div class="tl-title" style="color:${s.done?'var(--text)':'var(--text3)'}">${s.s}</div><div class="tl-time">${s.t}</div></div></div>`;
+  }).join('');
+  res.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap;gap:10px">
+      <div><div class="track-id">${c.id}</div><div class="track-desc">${c.category||c.type} · ${c.road}</div></div>
+      <span class="badge ${sc[c.status]||'b-blue'}">${c.status}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;padding:14px;background:var(--bg3);border-radius:10px;border:1px solid var(--border)">
+      <div><div class="dash-lbl">Location</div><div style="font-size:.82rem;font-weight:600;margin-top:3px">${c.location||c.district}</div></div>
+      <div><div class="dash-lbl">Submitted</div><div style="font-size:.82rem;font-weight:600;margin-top:3px">${c.date}</div></div>
+      <div><div class="dash-lbl">Severity</div><div style="font-size:.82rem;font-weight:700;color:${sevCol};margin-top:3px">${c.severity}/10</div></div>
+    </div>
+    <div class="timeline">${tl}</div>`;
+  res.style.display='block';
+}
+
+// ============================================================
+// CONTRACTORS
+// ============================================================
+function renderContractors(){
+  document.getElementById('contList').innerHTML=contractors.map(c=>{
+    const qc=c.qs>=85?'var(--green)':c.qs>=70?'var(--yellow)':'var(--red)';
+    const stars='⭐'.repeat(Math.round(c.rating));
+    return `<div class="cont-card">
+      <div class="cont-av" style="background:${c.col}">${c.emoji}</div>
+      <div style="flex:1">
+        <div class="cont-name">${c.name}</div>
+        <div class="cont-meta">${c.projects} Projects · Quality: <span style="color:${qc}">${c.qs}/100</span></div>
+        <div class="stars">${stars} <span style="color:var(--text2);font-size:.78rem">${c.rating}/5</span></div>
+        <div class="m-row">
+          <div class="metric"><div class="m-val" style="color:var(--red)">${c.cr}</div><div class="m-key">Complaint Rate</div></div>
+          <div class="metric"><div class="m-val" style="color:var(--yellow)">${c.dr}</div><div class="m-key">Delay Rate</div></div>
+          <div class="metric"><div class="m-val" style="color:${qc}">${c.qs}</div><div class="m-key">Quality Score</div></div>
+          <div class="metric"><div class="m-val">${c.projects}</div><div class="m-key">Projects</div></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// AI DETECT — fixed: only runs after upload
+// ============================================================
+function handleAIUpload(e){
+  const f=e.target.files[0];if(!f)return;
+  aiImageUploaded=true;
+  const pr=document.getElementById('aiPreview');
+  const reader=new FileReader();
+  reader.onload=ev=>{pr.src=ev.target.result;pr.style.display='block';};
+  reader.readAsDataURL(f);
+  document.getElementById('aiUpInner').innerHTML=`<div style="font-size:1.5rem">📊</div><div style="font-weight:600;margin-top:6px">${f.name} uploaded</div><div style="font-size:.76rem;color:var(--c2);margin-top:3px">Click Analyse Image to run AI detection</div>`;
+  document.getElementById('aiWarn').style.display='none';
+}
+const scanSteps=['Detecting surface anomalies…','Analysing crack patterns…','Measuring pothole depth…','Computing water damage index…','Calculating severity score…','Generating report…'];
+function runAI(){
+  if(!aiImageUploaded){document.getElementById('aiWarn').style.display='block';return;}
+  document.getElementById('aiWarn').style.display='none';
+  document.getElementById('scanWrap').style.display='block';
+  // hide cards
+  ['aiC1','aiC2','aiC3','aiC4'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('aiRec').style.display='none';
+  let step=0;
+  const iv=setInterval(()=>{
+    if(step<scanSteps.length){document.getElementById('scanStep').textContent=scanSteps[step++];}
+    else{
+      clearInterval(iv);
+      document.getElementById('scanWrap').style.display='none';
+      showAIResults();
+    }
+  },540);
+}
+function showAIResults(){
+  const ph=72+Math.random()*20,cr=45+Math.random()*20,wd=20+Math.random()*25,sv=6+Math.random()*3;
+  const data=[
+    {id:'aiC1',fi:'aif1',si:'ais1',w:ph,txt:`${ph.toFixed(0)}% confidence · ${2+Math.floor(Math.random()*4)} potholes detected`},
+    {id:'aiC2',fi:'aif2',si:'ais2',w:cr,txt:`${cr.toFixed(0)}% confidence · Linear cracking`},
+    {id:'aiC3',fi:'aif3',si:'ais3',w:wd,txt:`${wd.toFixed(0)}% confidence · Minor seepage`},
+    {id:'aiC4',fi:'aif4',si:'ais4',w:Math.min(sv*10,100),txt:`Severity Score: ${sv.toFixed(1)} / 10 — ${sv>=8?'Critical':sv>=6?'High':'Moderate'}`},
+  ];
+  data.forEach(d=>{
+    const c=document.getElementById(d.id);c.style.display='block';
+    setTimeout(()=>document.getElementById(d.fi).style.width=d.w+'%',100);
+    document.getElementById(d.si).textContent=d.txt;
+  });
+  const rec=document.getElementById('aiRec');
+  document.getElementById('aiRecText').textContent=`Based on the detected damage pattern, this road requires immediate pothole filling and crack sealing treatment within 2 weeks. AI recommends routing complaint to PWD – Road Maintenance Division under category: Critical Pothole + Surface Damage. Estimated repair cost: ₹1.2–2.4 Lakh.`;
+  setTimeout(()=>rec.style.display='block',400);
+}
+
+// ============================================================
+// CHATBOT
+// ============================================================
+const BOTS={
+  'anna salai':{t:"📍 Anna Salai (NH-48)",card:{title:"Anna Salai — National Highway",body:"🏗 Contractor: L&T Infrastructure Ltd\n📏 Thickness: 200 mm\n🔄 Last Relay: Jan 2023\n💰 Budget: ₹84 Crore\n❤ Health: 88/100 (Good)\n📞 +91-44-28290000"}},
+  'gst road':{t:"📍 GST Road (NH-44)",card:{title:"GST Road — National Highway",body:"🏗 Contractor: GR Infraprojects\n📏 Thickness: 220 mm\n🔄 Last Relay: Mar 2024\n💰 Budget: ₹120 Crore\n⚙ Status: In Progress"}},
+  'who built':{t:"🏗 Road contractor info depends on which road. Here's Anna Salai:\n\nContractor: L&T Infrastructure Ltd · ⭐ 4.5/5 · Complaint Rate: 3.2%",card:null},
+  'thickness':{t:"📏 Road thickness by type:\n• National Highways: 200–250 mm\n• State Highways: 160–200 mm\n• City Roads: 130–160 mm\n• MDR: 140–180 mm",card:null},
+  'pothole':{t:"🕳 Pothole filing is easy!",card:{title:"File Pothole Complaint",body:"1. Go to Report tab\n2. Select Road Damage → Potholes\n3. Upload photo + GPS\n4. Submit for instant tracking ID"},action:{lbl:"File Now →",p:'complain'}},
+  'complaint':{t:"📝 What would you like to do?",card:{title:"Complaint Help",body:"🔸 File new → Report tab\n🔸 Track existing → Track tab"},q:["File a pothole complaint","Track complaint status"]},
+  'track':{t:"🔍 To track, go to the Track tab and enter your Complaint ID.\n\nDemo: RW-CHN-2045 · RW-CBE-1822 · RW-MDU-0918",card:null,action:{lbl:"Go to Track →",p:'track'}},
+  'budget':{t:"💰 Road budget info:",card:{title:"Budget Dashboard",body:"✅ Total Sanctioned: ₹847 Crore\n💸 Spent: ₹612 Crore\n📊 Utilization: 72.3%\n📋 Ongoing projects: 38"},action:{lbl:"View Dashboard →",p:'dashboard'}},
+  'project':{t:"🚧 Ongoing Projects near Chennai:",card:{title:"Active Projects (2026)",body:"1. GST Road Relay — 62% complete\n2. Madhuravoyal Link — Widening\n3. Poonamallee Overlay — Planning"},action:{lbl:"View Roads →",p:'roads'}},
+  'repair':{t:"🔧 Repair history example — Anna Salai:\n2019 Full Resurfacing → 2021 Patch Work → 2023 Full Relay.\n\nSearch any road for full history.",card:null},
+  'hello':{t:"👋 Hello! Ask me about roads, budgets, complaints, or contractors.",card:null,q:["Who built Anna Salai?","File a pothole complaint","Show road budget"]},
+  'default':{t:"🤔 I can help with:\n• Road details & contractors\n• Filing & tracking complaints\n• Budget transparency\n\nTry: 'Who built Anna Salai?' or 'Track RW-CHN-2045'",card:null},
+};
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatWin').classList.toggle('open',chatOpen);
+  document.getElementById('cNotif').style.display=chatOpen?'none':'flex';
+}
+function sendChat(){
+  const inp=document.getElementById('chatInp');
+  const q=inp.value.trim();if(!q)return;
+  addMsg(q,'user');inp.value='';
+  setTimeout(()=>botReply(q.toLowerCase()),500);
+}
+function askBot(q){if(!chatOpen)toggleChat();addMsg(q,'user');setTimeout(()=>botReply(q.toLowerCase()),500);}
+function addMsg(text,role){
+  const w=document.getElementById('chatMsgs');
+  const t=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div');d.className='msg '+role;
+  d.innerHTML=`<div class="msg-bub">${text}</div><div class="msg-time">${t}</div>`;
+  w.appendChild(d);w.scrollTop=w.scrollHeight;
+}
+function botReply(q){
+  let r=BOTS.default;
+  for(const k of Object.keys(BOTS)){if(k!=='default'&&q.includes(k)){r=BOTS[k];break;}}
+  const w=document.getElementById('chatMsgs');
+  const t=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div');d.className='msg bot';
+  let inner=`<div class="msg-bub">${r.t.replace(/\n/g,'<br>')}`;
+  if(r.card)inner+=`<div class="info-card"><h5>${r.card.title}</h5><p>${r.card.body.replace(/\n/g,'<br>')}</p></div>`;
+  if(r.action)inner+=`<button class="btn btn-primary" style="margin-top:9px;font-size:.75rem;padding:7px 12px" onclick="nav(null,'${r.action.p}')">${r.action.lbl}</button>`;
+  if(r.q)inner+=`<div class="q-btns">${r.q.map(x=>`<span class="q-btn" onclick="askBot('${x}')">${x}</span>`).join('')}</div>`;
+  inner+='</div>';
+  d.innerHTML=inner+`<div class="msg-time">${t}</div>`;
+  w.appendChild(d);w.scrollTop=w.scrollHeight;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload=()=>{
+  initStorage();
+  animateStats();
+  renderFeatured();
+  renderAllRoads();
+  renderRecent();
+  renderContractors();
+  renderCatGrid();
+  // check offline
+  if(!navigator.onLine)document.getElementById('offlineBar').style.display='flex';
+  window.addEventListener('offline',()=>document.getElementById('offlineBar').style.display='flex');
+  window.addEventListener('online',()=>document.getElementById('offlineBar').style.display='none');
+};
+</script>
+</body>
+</html>
